@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html lang="en-us">
+<!-- still need an api idk which one -->
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <title>Train Routes and times!</title>
+    <meta charset="UTF-8">
+
+
+    <!-- my firebase link -->
+    <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <br>
+
+        <!-- Jumbotron -->
+        <div class="jumbotron">
+            <h1 class="text-center">Train Routs and times!</h1>
+        </div>
+
+        <div class="container">
+            <h2>Basic Table</h2>
+            <p>Trains Arriving At The Station</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Train Names</th>
+                        <th scope="col">Station</th>
+                        <th scope="col">ETA</th>
+                        <th scope="col">Boarding Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+
+            <!-- enter new train -->
+            <form role="form">
+                <div class="form-group row">
+                    <label for="name-input">Train Name:</label>
+                    <input class="form-control" id="name-input" type="text">
+                </div>
+                <div class="form-group row">
+                    <label for="station-input">Station Name:</label>
+                    <input class="form-control" id="station-input" type="text">
+                </div>
+                <div class="form-group row">
+                    <label for="time-input">Train Time of Arrival:</label>
+                    <input class="form-control" id="time-input" type="text">
+                </div>
+                <div class="form-group row">
+                    <label for="boarding-input">Boarding Time:</label>
+                    <textarea class="form-control" rows="1" id="boarding-input"></textarea>
+                </div>
+                <button class="btn btn-default" id="add-train" type="submit">Add Train</button>
+            </form>
+            
+        </div>
+        
+    </div>
+    
+</div>
+
+
+</div>
+
+</div>
+
+<!-- The jQuery Link -->
+<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+
+<!-- MY Script -->
+<script>
+
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyDXMsspwsy8xNsncf8zILHcNorh297ZFxk",
+            authDomain: "train-b8e3e.firebaseapp.com",
+            databaseURL: "https://train-b8e3e.firebaseio.com",
+            projectId: "train-b8e3e",
+            storageBucket: "train-b8e3e.appspot.com",
+            messagingSenderId: "869053926699"
+        };
+        firebase.initializeApp(config);
+
+        var database = firebase.database();
+
+        var name = "";
+        var station = "";
+        var time = 0;
+        var boarding = 0;
+
+        $("#add-train").on("click", function (event) {
+            event.preventDefault();
+
+            name = $("#name-input").val().trim();
+            station = $("#station-input").val().trim();
+            time = $("#time-input").val().trim();
+            boarding = $("#boarding-input").val().trim();
+
+            database.ref().push({
+                name: name,
+                station: station,
+                time: time,
+                boarding: boarding,
+                dateAdded: firebase.database.ServerValue.TIMESTAMP,
+                timeBoarding: firebase.database.ServerValue.TIMESTAMP
+            });
+
+        });
+
+        database.ref().on("child_added", function (snapshot) {
+            var sv = snapshot.val();
+
+            console.log(sv.name);
+            console.log(sv.station);
+            console.log(sv.time);
+            console.log(sv.boarding);
+
+            $("#name-display").text(sv.name);
+            $("#station-display").text(sv.station);
+            $("#time-display").text(sv.time);
+            $("#boarding-display").text(sv.boarding);
+
+        }, function (errorObject) {
+            console.log("Errors handled: " + errorObject.code);
+        });
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        }).then(function (response) {
+            var tBody = $("tbody");
+            var tRow = $("<tr>");
+            var name = $("<td>").text(response.name);
+            var station = $("<td>").text(response.station);
+            var time = $("<td>").text(response.time);
+            var boarding = $("<td>").text(response.boarding);
+            tRow.append(name, station, time, boarding);
+            tBody.append(tRow);
+        });
+    </script>
+</body>
+
+</html>
